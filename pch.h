@@ -57,13 +57,28 @@ public:
 
 		return *this;
 	}
+	bool operator==(const MyString& other) const {
+		if (size != other.size) {
+			return false;
+		}
+		for (int i = 0; i < size; ++i) {
+			if (myString[i] != other.myString[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	bool operator!=(const MyString& other) const {
+		return !(*this == other);
+	}
 	friend ostream& operator<<(ostream& _os, const MyString& _toPrint) {
 		_toPrint.Print(_os);
 		return _os;
 	}
 	friend istream& operator>>(istream& _is, MyString& _toEnter) {
 		char buffer[1024];
-		_is >> buffer;
+
+		_is.getline(buffer, sizeof(buffer)); // I had to use it :(((
 
 		delete[] _toEnter.myString;
 
@@ -146,7 +161,7 @@ public:
 	int maxRules;
 	int rulesAmount = 0;
 	Rule* rules;
-	Markov(int _maxRules = 5) : maxRules(_maxRules) { rules = new Rule[maxRules]; }
+	Markov(int _maxRules = 40) : maxRules(_maxRules) { rules = new Rule[maxRules]; }
 	void AddRule(Rule _rule) {
 		if (rulesAmount >= maxRules) {
 			Rule* newArray = new Rule[maxRules * 2];
@@ -161,7 +176,7 @@ public:
 	}
 
 	MyString& ApplyRules(MyString& _input) {
-		cout << "\33[32mApplying rules...\n";
+		cout << "\33[32mApplying rules...\33[0m\n";
 		for (int i = 0; i < rulesAmount; ++i) {
 			int j = 0;
 			int k = 0;
@@ -172,42 +187,63 @@ public:
 						continue;
 					}
 					_input.TryToRemove(j, j + rules[i].left.GetSize());
-					cout << _input << '\n';
 					_input.Insert(rules[i].right, j);
-					cout << _input << '\n';
 					i = 0;
 					k = 0;
 				}
 				++j;
 			}
 			if (rules[i].isFinal) {
-				cout << "\33[0m";
 				return _input;
 			}
 		}
-		cout << "\33[0m";
 		return _input;
 	}
 };
 
-int main() {
-	MyString aa = "Hello World! Hello World!";
-	Rule testRule1("Hello", "Let`s");
-	Rule testRule2("Wo", "play ");
-	Rule testRule3("rld", "Minecraft", true);
-	Rule testRule4("!", ")");
-
-
-	Markov testMarkov;
-	testMarkov.AddRule(testRule1);
-	testMarkov.AddRule(testRule2);
-	testMarkov.AddRule(testRule3);
-	testMarkov.AddRule(testRule4);
-	
-
-	cout << "\33[33mDefault Text: \33[35m" << aa << "\33[0m\n";
-
-	testMarkov.ApplyRules(aa);
-
-	cout << "\33[33mResult Text: \33[35m" << aa << "\33[0m\n";
-}
+//int main() {
+//	cout << "\33[33mText to Leet Text! Because why not? :)\33[0m" << endl;
+//	MyString toChange;
+//	cin >> toChange;
+//
+//	Markov testMarkov;
+//#pragma region RulesIGuess
+//	testMarkov.AddRule(Rule(MyString("a"), MyString("4")));
+//	testMarkov.AddRule(Rule(MyString("A"), MyString("4")));
+//	testMarkov.AddRule(Rule(MyString("b"), MyString("8")));
+//	testMarkov.AddRule(Rule(MyString("B"), MyString("8")));
+//	testMarkov.AddRule(Rule(MyString("c"), MyString("(")));
+//	testMarkov.AddRule(Rule(MyString("C"), MyString("(")));
+//	testMarkov.AddRule(Rule(MyString("d"), MyString("|)")));
+//	testMarkov.AddRule(Rule(MyString("D"), MyString("|)")));
+//	testMarkov.AddRule(Rule(MyString("f"), MyString("ph")));
+//	testMarkov.AddRule(Rule(MyString("H"), MyString("|-|")));
+//	testMarkov.AddRule(Rule(MyString("o"), MyString("0")));
+//	testMarkov.AddRule(Rule(MyString("l"), MyString("|")));
+//	testMarkov.AddRule(Rule(MyString("k"), MyString("|<")));
+//	testMarkov.AddRule(Rule(MyString("F"), MyString("Ph")));
+//	testMarkov.AddRule(Rule(MyString("m"), MyString("/\\/\\")));
+//	testMarkov.AddRule(Rule(MyString("M"), MyString("/\\/\\")));
+//	testMarkov.AddRule(Rule(MyString("n"), MyString("|\\|")));
+//	testMarkov.AddRule(Rule(MyString("N"), MyString("|\\|")));
+//	testMarkov.AddRule(Rule(MyString("p"), MyString("|*")));
+//	testMarkov.AddRule(Rule(MyString("P"), MyString("|*")));
+//	testMarkov.AddRule(Rule(MyString("r"), MyString("|2")));
+//	testMarkov.AddRule(Rule(MyString("R"), MyString("|2")));
+//	testMarkov.AddRule(Rule(MyString("t"), MyString("7")));
+//	testMarkov.AddRule(Rule(MyString("T"), MyString("7")));
+//	testMarkov.AddRule(Rule(MyString("u"), MyString("(_)")));
+//	testMarkov.AddRule(Rule(MyString("U"), MyString("(_)")));
+//	testMarkov.AddRule(Rule(MyString("w"), MyString("\\/\\/")));
+//	testMarkov.AddRule(Rule(MyString("W"), MyString("\\/\\/")));
+//	testMarkov.AddRule(Rule(MyString("x"), MyString("><")));
+//	testMarkov.AddRule(Rule(MyString("X"), MyString("><")));
+//	testMarkov.AddRule(Rule(MyString("y"), MyString("`/")));
+//	testMarkov.AddRule(Rule(MyString("Y"), MyString("`/")));
+//	testMarkov.AddRule(Rule(MyString("z"), MyString("2")));
+//	testMarkov.AddRule(Rule(MyString("Z"), MyString("2")));
+//#pragma endregion
+//
+//	testMarkov.ApplyRules(toChange);
+//	cout << "\33[33mResult Text: \33[35m" << toChange << "\33[0m\n";
+//}
